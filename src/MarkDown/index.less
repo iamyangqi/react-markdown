@@ -1,0 +1,110 @@
+.markdown-wrapper {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  padding: 8px 12px;
+  background-color: #f8faf5;
+
+  .markdown-row {
+    height: 100%;
+
+    >div {
+      height: 100%;
+    }
+  }
+
+  #markdownContent {
+    margin-right: 12px;
+    background-color: transparent;
+    height: 100%;
+  }
+
+  #htmlContent {
+    height: 100%;
+    margin-left: 12px;
+    border: 1px solid #d9d9d9;
+    border-radius: 4px;
+    overflow: auto;
+    box-sizing: border-box;
+    padding: 4px 6px;
+
+    &:focus, &:hover {
+      border-color: #40a9ff;
+      border-right-width: 1px!important;
+    }
+  }
+
+  pre {
+    position: relative;
+    margin-bottom: 24px;
+    border-radius: 3px;
+    border: 1px solid #C3CCD0;
+    padding: 0px;
+    background: #FEFEFE;
+    overflow: hidden;
+    display: flex;
+  }
+
+  code {
+    display: block;
+    width: 100%;
+    font-weight: 300;
+    font-family: Menlo, monospace;
+    font-size: 0.8em;
+    overflow: auto;
+  }
+
+  code.has-numbering {
+    margin-left: 8px;
+  }
+
+  table {
+    width: 100%;
+    border: 1px solid #EFEFEF;
+
+    tr {
+      height: 28px;
+    }
+
+    thead>tr {
+      background-color: #F9F9F9;
+    }
+
+    tbody>tr {
+      &:nth-of-type(2n) {
+        background-color: #F9F9F9;
+      }
+
+      &:nth-of-type(2n+1) {
+        background-color: #FCFCFC;
+      }
+    }
+
+    th, td {
+      text-align: center;
+      border: 1px solid #EFEFEF;
+    }
+  }
+
+  .pre-numbering {
+    position: relative;
+    top: 0;
+    left: 0;
+    width: 20px;
+    padding: 0px;
+    display: inline-block;
+    border-right: 1px solid #C3CCD0;
+    border-radius: 3px 0 0 3px;
+    background-color: #EEE;
+    text-align: right;
+    font-family: Menlo, monospace;
+    font-size: 0.8em;
+    color: #AAA;
+    list-style: none;
+    margin: 0;
+
+    li {
+      text-align: center;
+    }
+  }
+}

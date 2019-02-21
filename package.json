@@ -1,0 +1,51 @@
+{
+  "name": "react-markdown",
+  "version": "0.0.1",
+  "description": "markdown written by react + typescript",
+  "main": "index.jsx",
+  "dependencies": {
+    "@types/antd": "^1.0.0",
+    "@types/highlight.js": "^9.12.3",
+    "@types/jquery": "^3.3.29",
+    "@types/marked": "^0.6.1",
+    "antd": "^3.13.3",
+    "global": "^4.3.2",
+    "highlight.js": "^9.14.2",
+    "jquery": "^3.3.1",
+    "marked": "^0.6.0",
+    "react": "^16.8.1",
+    "react-dom": "^16.8.1",
+    "typescript": "^3.3.3",
+    "typings": "^2.1.1"
+  },
+  "devDependencies": {
+    "@types/react": "^16.8.2",
+    "@types/react-dom": "^16.8.0",
+    "babel-core": "^6.26.3",
+    "babel-loader": "7",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-react": "^6.24.1",
+    "babel-preset-stage-1": "^6.24.1",
+    "css-loader": "^2.1.0",
+    "html-webpack-plugin": "^3.2.0",
+    "less": "^3.9.0",
+    "less-loader": "^4.1.0",
+    "react-hot-loader": "^4.6.5",
+    "require": "^2.4.20",
+    "rimraf": "^2.6.3",
+    "style-loader": "^0.23.1",
+    "ts-loader": "^5.3.3",
+    "uglifyjs-webpack-plugin": "^2.1.1",
+    "webpack": "^4.29.3",
+    "webpack-cli": "^3.2.3",
+    "webpack-dev-server": "^3.1.14",
+    "webpack-merge": "^4.2.1"
+  },
+  "scripts": {
+    "clean": "rimraf -rf lib dist ",
+    "dev": "webpack-dev-server --open --progress --colors --config webpack.dev.js",
+    "build": "yarn clean && yarn gend && webpack --colors --config webpack.prod.js",
+    "gend": "tsc --allowJs false -d --declarationDir lib"
+  }
+}
