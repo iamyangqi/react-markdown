@@ -3,6 +3,21 @@
   "version": "0.0.1",
   "description": "markdown written by react + typescript",
   "main": "index.jsx",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/iamyangqi/react-markdown.git"
+  },
+  "keywords": [
+    "typescript",
+    "markdown",
+    "react"
+  ],
+  "author": "yangqi",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/iamyangqi/react-markdown/issues"
+  },
+  "homepage": "https://github.com/iamyangqi/react-markdown#readme",
   "dependencies": {
     "@types/antd": "^1.0.0",
     "@types/highlight.js": "^9.12.3",
@@ -47,5 +62,8 @@
     "dev": "webpack-dev-server --open --progress --colors --config webpack.dev.js",
     "build": "yarn clean && yarn gend && webpack --colors --config webpack.prod.js",
     "gend": "tsc --allowJs false -d --declarationDir lib"
+  },
+  "directories": {
+    "lib": "lib"
   }
 }
