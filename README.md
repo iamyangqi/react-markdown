@@ -27,8 +27,8 @@ export default class AppTest extends React.Component {
 }
 ```
 
-### props
-
+### MarkDown props
+```
 interface IMarkDownProps {
     mode: MarkDownMode,                  // 指定模式
     defaultValue?: string,               // 设定默认值
@@ -43,6 +43,7 @@ interface IMarkDownProps {
         split?: React.Component | null,  // 自定义编辑模式下的split模块
     }
 }
+```
 
 您可以使用 **react-markdown-ts**
 
