@@ -16,6 +16,10 @@ module.exports = merge(devConfig, {
         library: 'react-markdown-ts',                 // 包的名称、npm publish之后引入的module名
         libraryTarget: 'umd',                         // 包的引用方式
     },
+    externals: {
+        'react': 'react',                             //因为引入的肯定是react项目，所以不需要再将react打包进npm包
+        'react-dom': 'react-dom'
+    },
     plugins: [
         new UglifyJSPlugin({
             uglifyOptions: {

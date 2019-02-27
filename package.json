@@ -1,8 +1,9 @@
 {
   "name": "react-markdown-ts",
-  "version": "0.0.3",
+  "version": "0.0.6",
   "description": "markdown written by react + typescript",
-  "main": "index.jsx",
+  "module": "./lib/MarkDown/index.js",
+  "main": "./lib/MarkDown/index.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/iamyangqi/react-markdown.git"
@@ -10,7 +11,8 @@
   "typings": "./lib/MarkDown/index.d.ts",
   "files": [
     "lib",
-    "package.json"
+    "package.json",
+    "README.md"
   ],
   "keywords": [
     "typescript",
@@ -71,8 +73,5 @@
     "dev": "webpack-dev-server --open --progress --colors --config webpack.dev.js",
     "build": "yarn clean && yarn gend && webpack --colors --config webpack.prod.js",
     "gend": "tsc --allowJs false -d --declarationDir lib"
-  },
-  "directories": {
-    "lib": "lib"
   }
 }
