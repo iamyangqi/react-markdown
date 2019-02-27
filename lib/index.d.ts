@@ -7,6 +7,7 @@ export declare enum MarkDownMode {
 }
 interface IMarkDownProps {
     mode: MarkDownMode;
+    defaultValue?: string;
     disabled?: boolean;
     input?: string;
     options?: {
@@ -28,6 +29,7 @@ export default class MarkDown extends React.Component<IMarkDownProps, IMarkDownS
     highlightCode: boolean;
     scroll: boolean;
     showCodeLines: boolean;
+    markdown: any;
     constructor(props: IMarkDownProps);
     addNumber(): void;
     highlight(): void;
@@ -35,8 +37,10 @@ export default class MarkDown extends React.Component<IMarkDownProps, IMarkDownS
     htmlScroll: () => void;
     setActive: () => void;
     html2Escape(sHtml: any): any;
+    highlightMarkDown: () => void;
     setInput: (input: string | undefined) => void;
-    changeMarkdown: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+    translate: (input: string) => void;
+    changeMarkdown: () => void;
     componentDidMount(): void;
     componentWillReceiveProps(nextProps: IMarkDownProps): void;
     render(): JSX.Element;

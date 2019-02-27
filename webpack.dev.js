@@ -59,6 +59,25 @@ module.exports = {
                     },
                 }],
             },
+            {
+                test: /\.(png|jpg|gif)$/,
+                use: [
+                    { loader: 'url-loader?limit=8192' },
+                ],
+            },
+            {
+                test: /\.(mp4|ogg|svg)$/,
+                use: [
+                    // { loader: 'cache-loader' },
+                    { loader: 'file-loader' },
+                ],
+            },
+            {
+                test: /\.(eot|ttf|woff|woff2)$/,
+                use: [
+                    { loader: 'file-loader' },
+                ],
+            },
         ]
     },
     plugins: [

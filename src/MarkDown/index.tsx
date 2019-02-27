@@ -1,23 +1,32 @@
 import * as React from "react";
-import './index.less';
-import {Input, Row, Col} from "antd";
 import marked from 'marked';
 import hljs from 'highlight.js';
+import './index.less';
 import 'highlight.js/styles/vs.css';
+import InputArea from "./Components/InputArea";
+import {INDEXTEXT} from "./Utils/Consts";
 
 export enum MarkDownMode {   // markdown的两种模式： EDIT - 编辑    VIEW - 阅读
     'EDIT', 'VIEW'
 }
 
+export interface IMarkDownChange {
+    markdown: string,
+    html: string,
+}
+
 interface IMarkDownProps {
-    mode: MarkDownMode,         // 指定模式
-    disabled?: boolean,         // 编辑模式下是否禁止编辑
-    input?: string,             // 阅读模式下设定需要转化的markdown语句
+    mode: MarkDownMode,                  // 指定模式
+    defaultValue?: string,               // 设定默认值
+    disabled?: boolean,                  // 编辑模式下是否禁止编辑
+    value?: string,                      // 阅读模式下设定需要转化的markdown语句
+    onChange?: (IMarkDownChange) => void,// 编辑模式下获取文本
     options?: {
-        highlightCode: boolean, // code 组件是否高亮代码
-        showCodeLines: boolean, // code 组件是否显示行数
-        scroll?: boolean,       // 编辑模式下两边代码是否同步
-        escapeHtml?: boolean,   // 是否转义HTML
+        highlightActiveLine: boolean,    // 高亮光标所在的行
+        highlightCode: boolean,          // code 组件是否高亮代码
+        showCodeLines: boolean,          // code 组件是否显示行数
+        scroll?: boolean,                // 编辑模式下两边代码是否同步
+        split?: React.Component | null,  // 自定义编辑模式下的split模块
     }
 }
 
@@ -25,15 +34,19 @@ interface IMarkDownStates {
     html: string;
     mode: MarkDownMode;
     disabled: boolean;
-    input: string;
+    value: string;
 }
 
-export default class MarkDown extends React.Component<IMarkDownProps, IMarkDownStates> {
+export class MarkDown extends React.Component<IMarkDownProps, IMarkDownStates> {
     active: string = '';
-    escapeHtml: boolean;
+    defaultValue: string = '';
     highlightCode: boolean;
+    highlightActiveLine: boolean;
     scroll: boolean;
     showCodeLines: boolean;
+    markdown: any;
+    split: React.ReactNode | null;
+    disabled: boolean;
 
     constructor(props: IMarkDownProps) {
         super(props);
@@ -42,16 +55,43 @@ export default class MarkDown extends React.Component<IMarkDownProps, IMarkDownS
             html: '',
             mode: this.props.mode,
             disabled: !!this.props.disabled,
-            input: this.props.input ? this.props.input : ''
+            value: this.props.value ? this.props.value : ''
         }
 
-        this.escapeHtml = this.props.options && this.props.options.escapeHtml ? this.props.options.escapeHtml : false;
-        this.scroll = this.props.options && this.props.options.scroll !== undefined ? this.props.options.scroll : true;
-        this.showCodeLines = this.props.options && this.props.options.showCodeLines !== undefined ? this.props.options.showCodeLines : true;
-        this.highlightCode = this.props.options && this.props.options.highlightCode !== undefined ? this.props.options.highlightCode : true;
+        const {defaultValue, options} = this.props;
+
+        this.defaultValue = defaultValue ? defaultValue : INDEXTEXT;
+        this.scroll = options && options.scroll !== undefined ? options.scroll : true;
+        this.showCodeLines = options && options.showCodeLines !== undefined ? options.showCodeLines : true;
+        this.highlightCode = options && options.highlightCode !== undefined ? options.highlightCode : true;
+        this.highlightActiveLine = options && options.highlightActiveLine !== undefined ? options.highlightActiveLine : true;
+
+        if (options && options.split !== null) {
+            this.split = options.split
+        } else if (options && options.split === null) {
+            this.split = null
+        } else {
+            this.split = <div className='split'/>
+        }
     }
 
-    addNumber() {
+    get htmlScrollTop() {
+        return $('#htmlContent').scrollTop()!;
+    }
+
+    get markdownScrollTop() {
+        return $('#markdown-code .ace_scrollbar-v')[0].scrollTop;
+    }
+
+    get htmlScrollHeight() {
+        return $('#htmlContent')[0].scrollHeight - $('#htmlContent')[0].clientHeight;
+    }
+
+    get markdownScrollHeight() {
+        return $('#markdown-code .ace_scrollbar-v')[0].scrollHeight - $('#markdown-code .ace_scrollbar-v')[0].clientHeight;
+    }
+
+    showCodeNumber() {
         $('pre code').each(function(){
             if ($(this).parent().find('.pre-numbering').length === 0) {
                 const lines = $(this).text().split('\n').length;
@@ -75,25 +115,19 @@ export default class MarkDown extends React.Component<IMarkDownProps, IMarkDownS
         })
     }
 
-    mkScroll = () => {
+    mkScroll = (e: any) => {
         if (this.active === 'markdown') {
-            const markdownScrollTop = $('#markdownContent').scrollTop()!;
-            const markdownScrollHeight = $('#markdownContent')[0].scrollHeight;
-            const htmlScrollHeight = $('#htmlContent')[0].scrollHeight;
-            const ratio = markdownScrollTop / markdownScrollHeight;
-            const htmlScrollTop = htmlScrollHeight * ratio;
+            const ratio = this.markdownScrollTop / this.markdownScrollHeight;
+            const htmlScrollTop = this.htmlScrollHeight * ratio;
             $('#htmlContent').scrollTop(htmlScrollTop);
         }
     }
 
     htmlScroll = () => {
         if (this.active === 'html') {
-            const htmlScrollTop = $('#htmlContent').scrollTop()!;
-            const htmlScrollHeight = $('#htmlContent')[0].scrollHeight;
-            const markdownScrollHeight = $('#markdownContent')[0].scrollHeight;
-            const ratio = htmlScrollTop / htmlScrollHeight;
-            const markdownScrollTop = markdownScrollHeight * ratio;
-            $('#markdownContent').scrollTop(markdownScrollTop);
+            const ratio = this.htmlScrollTop / this.htmlScrollHeight;
+            const markdownScrollTop = this.markdownScrollHeight * ratio;
+            $('#markdown-code .ace_scrollbar-v').scrollTop(markdownScrollTop);
         }
     }
 
@@ -102,8 +136,17 @@ export default class MarkDown extends React.Component<IMarkDownProps, IMarkDownS
             this.active = 'html';
         })
 
-        $('#markdownContent').on('mouseenter', () => {
+        $('#markdown-code').on('mouseenter', () => {
             this.active = 'markdown';
+        })
+    }
+
+    setDefault = () => {
+        const newState = {...this.state}
+        newState.value = this.defaultValue;
+
+        this.setState(newState, () => {
+            this.md2Html(this.defaultValue)
         })
     }
 
@@ -111,31 +154,40 @@ export default class MarkDown extends React.Component<IMarkDownProps, IMarkDownS
         return sHtml.replace(/[<>&"]/g,function(c){return {'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c];});
     }
 
-    setInput = (input: string | undefined) => {
-        const newInput = this.escapeHtml ? this.html2Escape(input) : input;
+    md2Html = (value: string) => {
+        const html = marked(value, {breaks: true});
+        const newState = {...this.state}
+        newState.html = html;
 
-        if (this.state.mode === MarkDownMode.VIEW) {
-            this.setState({
-                html: newInput ? marked(newInput, {breaks: true}) : ''
-            })
-        }
-    }
-
-    changeMarkdown = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        const input = e.target.value;
-        const newInput = this.escapeHtml ? this.html2Escape(input) : input;
-
-        const html = marked(newInput, {breaks: true});
-        this.setState({
-            html
-        }, () => {
+        this.setState(newState, () => {
             if (this.showCodeLines) {
-                this.addNumber()
+                this.showCodeNumber()
+            }
+
+            if (this.props.onChange) {
+                this.props.onChange({
+                    markdown: this.state.value,
+                    html: this.state.html
+                })
             }
         })
     }
 
+    onChange = (val: string) => {
+        const newState = {...this.state}
+        newState.value = val;
+
+        this.setState(newState, () => {
+            this.md2Html(val);
+        })
+
+
+
+    }
+
     componentDidMount() {
+        this.setDefault();
+
         if (this.highlightCode) {
             this.highlight();
         }
@@ -143,46 +195,47 @@ export default class MarkDown extends React.Component<IMarkDownProps, IMarkDownS
         if (this.state.mode === MarkDownMode.EDIT && this.scroll) {
             this.setActive();
         }
-
-        if (this.state.mode === MarkDownMode.VIEW) {
-            this.setInput(this.props.input)
-        }
     }
 
     componentWillReceiveProps(nextProps: IMarkDownProps) {
         if (this.props.mode !== nextProps.mode) {
-            this.setState({
-                mode: nextProps.mode
-            })
+            const newState = {...this.state};
+            newState.mode = nextProps.mode;
+            this.setState(newState)
         }
 
         if (this.props.disabled !== nextProps.disabled) {
-            this.setState({
-                disabled: !!nextProps.disabled
-            })
+            const newState = {...this.state};
+            newState.disabled = !!nextProps.disabled
+            this.setState(newState)
         }
 
-        if (this.state.mode === MarkDownMode.VIEW && this.props.input !== nextProps.input) {
-            this.setInput(nextProps.input)
+        if (this.state.mode === MarkDownMode.VIEW && this.props.value !== nextProps.value) {
+            this.md2Html(nextProps.value ? nextProps.value : '')
         }
     }
 
     render() {
         return (
             <div className="markdown-wrapper">
-                <Row className="markdown-row">
+                <div className="markdown-row">
                     {
                         this.state.mode === MarkDownMode.VIEW
                             ? null
-                            : <Col span={12}>
-                                 <Input.TextArea id="markdownContent" onChange={this.changeMarkdown} onScroll={this.mkScroll}
-                                                disabled={this.state.disabled}/>
-                              </Col>
+                            : <div className="markdown-part">
+                                <div id="markdownContent" >
+                                    <InputArea
+                                        highlightActiveLine={this.highlightActiveLine} onChange={this.onChange}
+                                        disabled={this.state.disabled} defaultValue={this.defaultValue}
+                                        value={this.state.value} onScroll={this.mkScroll}/>
+                                    </div>
+                                </div>
                     }
-                    <Col span={12}>
+                    {this.state.mode === MarkDownMode.VIEW ? null : this.split}
+                    <div className="html-part">
                         <div id="htmlContent" onScroll={this.htmlScroll} dangerouslySetInnerHTML={{__html: this.state.html}} />
-                    </Col>
-                </Row>
+                    </div>
+                </div>
             </div>
         )
     }
