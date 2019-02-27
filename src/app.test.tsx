@@ -12,7 +12,7 @@ export default class AppTest extends React.Component<{}, {
         super(props);
 
         this.state = {
-            mode: MarkDownMode.VIEW,
+            mode: MarkDownMode.EDIT,
             disable: false,
         }
     }
@@ -30,7 +30,7 @@ export default class AppTest extends React.Component<{}, {
         })
     }
 
-    aa = (md: IMarkDownChange) => {
+    onChange = (md: IMarkDownChange) => {
         console.log(md);
     }
 
@@ -51,7 +51,7 @@ export default class AppTest extends React.Component<{}, {
                     </Col>
                 </Row>
                 <div style={{flex: 1, overflow: 'hidden'}}>
-                    <MarkDown mode={this.state.mode} disabled={this.state.disable} onChange={this.aa}/>
+                    <MarkDown mode={this.state.mode} disabled={this.state.disable} onChange={this.onChange}/>
                 </div>
             </div>
         )

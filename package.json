@@ -1,18 +1,24 @@
 {
   "name": "react-markdown-ts",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "markdown written by react + typescript",
   "main": "index.jsx",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/iamyangqi/react-markdown.git"
   },
+  "typings": "./lib/MarkDown/index.d.ts",
+  "files": [
+    "lib",
+    "package.json"
+  ],
   "keywords": [
     "typescript",
     "markdown",
     "react"
   ],
   "author": "yangqi",
+  "email": "690031221@qq.com",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/iamyangqi/react-markdown/issues"

@@ -12,7 +12,9 @@ module.exports = merge(devConfig, {
     output: {
         path: path.resolve(__dirname, './dist'),      // 输出的路径
         publicPath: './',                             // 公共资源路径
-        filename: 'app/[name]_[hash:8].js'            // 打包后文件
+        filename: 'app/[name]_[hash:8].js',           // 打包后文件
+        library: 'react-markdown-ts',                 // 包的名称、npm publish之后引入的module名
+        libraryTarget: 'umd',                         // 包的引用方式
     },
     plugins: [
         new UglifyJSPlugin({
@@ -36,7 +38,7 @@ module.exports = merge(devConfig, {
                 removeTagWhitespace: true,
                 removeEmptyAttributes: true,
                 removeStyleLinkTypeAttributes: true,
-                title: 'frontend'
+                title: 'react-markdown'
             },
         }),
     ]
