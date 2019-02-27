@@ -1,6 +1,6 @@
 {
   "name": "react-markdown-ts",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "markdown written by react + typescript",
   "module": "./lib/MarkDown/index.js",
   "main": "./lib/MarkDown/index.js",
@@ -71,7 +71,10 @@
   "scripts": {
     "clean": "rimraf -rf lib dist ",
     "dev": "webpack-dev-server --open --progress --colors --config webpack.dev.js",
-    "build": "yarn clean && yarn gend && webpack --colors --config webpack.prod.js",
+    "build": "rimraf -rf lib dist && npm run gend && npm run compile-all-files-for-release && npm run copy-resource-files",
+    "compile-all-files": "npx tsc > /dev/null 2>&1",
+    "compile-all-files-for-release": "npx tsc --sourceMap false --inlineSources false --inlineSourceMap false > /dev/null 2>&1",
+    "copy-resource-files": "npx rsync -avz --exclude '*.ts' --exclude '*.tsx' --exclude '*.js' --exclude '*.jsx' src/ lib",
     "gend": "tsc --allowJs false -d --declarationDir lib"
   }
 }

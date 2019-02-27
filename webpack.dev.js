@@ -12,7 +12,8 @@ module.exports = {
     ],
     output: {
         path: path.resolve(__dirname, './dist'),      // 输出的路径
-        filename: 'app/[name]_[hash:8].js',           // 打包后文件
+        filename: '[name]_[hash:8].js',               // 打包后文件
+        publicPath: '/',
         library: 'react-markdown-ts',                 // 包的名称、npm publish之后引入的module名
         libraryTarget: 'umd',                         // 包的引用方式
     },
@@ -32,7 +33,7 @@ module.exports = {
                 exclude: /node_modules/
             },
             {
-                test: /\.tsx?$/,
+                test: /\.(ts|tsx)?$/,
                 use: [
                     { loader: "babel-loader" },
                     { loader: "ts-loader" }
@@ -56,9 +57,6 @@ module.exports = {
                     loader: 'css-loader',
                 }, {
                     loader: 'less-loader',
-                    options: {
-                        sourceMap: true,
-                    },
                 }],
             },
             {

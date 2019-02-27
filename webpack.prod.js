@@ -7,18 +7,14 @@ const webpack = require('webpack');
 
 delete devConfig.devServer;
 
-module.exports = merge(devConfig, {
+const prodConfig = merge(devConfig, {
     mode: "production",
     output: {
         path: path.resolve(__dirname, './dist'),      // 输出的路径
-        publicPath: './',                             // 公共资源路径
+        publicPath: '/',                             // 公共资源路径
         filename: 'app/[name]_[hash:8].js',           // 打包后文件
         library: 'react-markdown-ts',                 // 包的名称、npm publish之后引入的module名
         libraryTarget: 'umd',                         // 包的引用方式
-    },
-    externals: {
-        'react': 'react',                             //因为引入的肯定是react项目，所以不需要再将react打包进npm包
-        'react-dom': 'react-dom'
     },
     plugins: [
         new UglifyJSPlugin({
@@ -47,3 +43,5 @@ module.exports = merge(devConfig, {
         }),
     ]
 })
+
+module.exports = prodConfig;

@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-        "outDir": "./lib",
+        "outDir": "lib",
         "module": "es2015",
         "target": "es5",
         "lib": ["es7", "dom", "es2017.object"],
@@ -24,14 +24,8 @@
             "*": ["src/*"]
         }
     },
-    "exclude": [
-        "./node_modules/*",
-        "build",
-        "scripts",
-        "acceptance-tests",
-        "webpack",
-        "webjar",
-        "jest",
-        "src/setupTests.ts"
+    "include": [
+        "src",
+        "types"
     ]
 }
