@@ -32,15 +32,15 @@ export default class AppTest extends React.Component {
 interface IMarkDownProps {
     mode: MarkDownMode,                  // 指定模式
     defaultValue?: string,               // 设定默认值
-    disabled?: boolean,                  // 编辑模式下是否禁止编辑
+    readonly?: boolean,                  // 编辑模式下是否禁止编辑
     value?: string,                      // 阅读模式下设定需要转化的markdown语句
     onChange?: (IMarkDownChange) => void,// 编辑模式下获取文本
     options?: {
-        highlightActiveLine: boolean,    // 高亮光标所在的行
-        highlightCode: boolean,          // code 组件是否高亮代码
-        showCodeLines: boolean,          // code 组件是否显示行数
-        scroll?: boolean,                // 编辑模式下两边代码是否同步
-        split?: React.Component | null,  // 自定义编辑模式下的split模块
+        allowDropFile?: boolean,          // 是否允许拖拽文件
+        highlightCode?: boolean,          // code 组件是否高亮代码
+        showCodeLines?: boolean,          // code 组件是否显示行数
+        scroll?: boolean,                 // 编辑模式下两边代码是否scroll同步
+        split?: React.Component | null,   // 自定义编辑模式下的split模块
     }
 }
 ```
@@ -59,4 +59,8 @@ interface IMarkDownProps {
 
 进入独立的阅读模式界面，我们在版面渲染上的每一个细节：字体，字号，行间距，前背景色都倾注了大量的时间，努力提升阅读的体验和品质。
 
-再一次感谢您花费时间阅读这份欢迎稿，开始撰写新的文稿吧！祝您在这里记录、阅读、分享愉快！
+### 4. 拖拽模式
+
+您可以将本地的markdown文件直接拖拽至编辑框内，**react-markdown-ts** 会自动帮您解析加载，十分方便。
+
+##再一次感谢您花费时间阅读这份欢迎稿，开始撰写新的文稿吧！祝您在这里记录、阅读、分享愉快！
