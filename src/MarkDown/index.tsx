@@ -21,6 +21,7 @@ interface IMarkDownProps {
     disabled?: boolean,                  // 编辑模式下是否禁止编辑
     value?: string,                      // 阅读模式下设定需要转化的markdown语句
     onChange?: (IMarkDownChange) => void,// 编辑模式下获取文本
+    height?: string,
     options?: {
         highlightActiveLine: boolean,    // 高亮光标所在的行
         highlightCode: boolean,          // code 组件是否高亮代码
@@ -227,7 +228,7 @@ export class MarkDown extends React.Component<IMarkDownProps, IMarkDownStates> {
                                     <InputArea
                                         highlightActiveLine={this.highlightActiveLine} onChange={this.onChange}
                                         disabled={this.state.disabled} defaultValue={this.defaultValue}
-                                        value={this.state.value} onScroll={this.mkScroll}/>
+                                        value={this.state.value} onScroll={this.mkScroll} height={this.props.height}/>
                                     </div>
                                 </div>
                     }

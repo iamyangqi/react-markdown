@@ -22,6 +22,7 @@ export interface InputAreaProps {
     defaultValue?: string;
     highlightActiveLine?: boolean;
     disabled: boolean;
+    height?: string; //
 }
 
 export default class InputArea extends React.Component<InputAreaProps> {
@@ -65,7 +66,7 @@ export default class InputArea extends React.Component<InputAreaProps> {
         editor.renderer.updateFontSize();
         this.completers = this.props.completers!;
         this.addCustomCompletions();
-        this.disabled = this.props.disabled
+        this.disabled = this.props.disabled;
     }
 
     componentWillReceiveProps(nextProps: InputAreaProps) {
@@ -73,7 +74,6 @@ export default class InputArea extends React.Component<InputAreaProps> {
         const nextCompleter = nextProps.completers ? nextProps.completers : [];
         const isChange = thisCompleter.toString() !== nextCompleter.toString();
         this.disabled = nextProps.disabled;
-        console.log(nextProps.disabled)
         if (isChange) {
             this.completers = nextProps.completers!;
             this.addCustomCompletions();
@@ -100,7 +100,7 @@ export default class InputArea extends React.Component<InputAreaProps> {
                 onScroll={this.props.onScroll}
                 highlightActiveLine={this.props.highlightActiveLine}
                 defaultValue={this.props.defaultValue}
-                height={'100%'}
+                height={this.props.height ? this.props.height : '100%'}
                 width={'100%'} />
         )
     }
