@@ -1,6 +1,6 @@
 {
   "name": "react-markdown-ts",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "markdown written by react + typescript",
   "module": "./lib/MarkDown/index.js",
   "main": "./lib/MarkDown/index.js",
