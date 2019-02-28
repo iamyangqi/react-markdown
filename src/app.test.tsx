@@ -51,7 +51,7 @@ export default class AppTest extends React.Component<{}, {
                     </Col>
                 </Row>
                 <div style={{flex: 1, overflow: 'hidden'}}>
-                    <MarkDown mode={this.state.mode} disabled={this.state.disable} onChange={this.onChange}/>
+                    <MarkDown mode={this.state.mode} readonly={this.state.disable} onChange={this.onChange}/>
                 </div>
             </div>
         )

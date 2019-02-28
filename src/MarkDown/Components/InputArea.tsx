@@ -1,107 +1,59 @@
-import AceEditor from 'react-ace';
-import ace from 'brace';
-import 'brace/mode/markdown';
-import 'brace/theme/github';
-import 'brace/ext/language_tools';
 import * as React from "react";
+import '../Utils/codemirror/lib/codemirror.css'
+import '../Utils/codemirror/mode/markdown/markdown'
+import '../Utils/codemirror/addon/hint/show-hint.css'
+import '../Utils/codemirror/addon/hint/show-hint'
+import '../Utils/codemirror/addon/hint/anyword-hint'
+import '../Utils/codemirror/addon/comment/comment'
+import '../Utils/codemirror/keymap/sublime'
+import CodeMirror from '../Utils/codemirror/lib/codemirror'
 
-export interface Completer {
-    name: string;
-    value: string;
-    score: number;
-    meta: string;
-    caption?: string;
-    type?: string;
-}
 
 export interface InputAreaProps {
-    completers?: Completer[];
     value: string;
-    onChange: (val: string) => void;
-    onScroll: (e: any) => void;
+    onRef: (ref: any) => void;
     defaultValue?: string;
-    highlightActiveLine?: boolean;
-    disabled: boolean;
-    height?: string; //
+    allowDropFile?: boolean;
 }
 
 export default class InputArea extends React.Component<InputAreaProps> {
-    aceEditor: any;
-    completers?: Completer[] = [];
-    disabled: boolean;
+    editor: any;
+    codeDom: any;
 
     constructor(props: InputAreaProps) {
         super(props);
     }
 
-    addCustomCompletions = () => {
-        const langTools = ace.acequire("ace/ext/language_tools");
-
-        langTools.addCompleter({
-            getCompletions: (
-                editor: any,
-                session: any,
-                pos: any,
-                prefix: any,
-                callback: (p: null, v: Completer[]) => void
-            ) => {
-                if (prefix.length === 0) {
-                    callback(null, []);
-                    return;
-                }
-                if (this.completers) {
-                    callback(null, this.completers.slice());
-                }
-            },
-        });
-    };
-
-    onChange = (val: any) => {
-        this.props.onChange(val);
-    }
-
     componentDidMount() {
-        const editor = this.aceEditor.editor;
-        editor.container.style.lineHeight = 1.8;
-        editor.renderer.updateFontSize();
-        this.completers = this.props.completers!;
-        this.addCustomCompletions();
-        this.disabled = this.props.disabled;
+        this.editor = CodeMirror.fromTextArea(this.codeDom, {
+            lineNumbers: false,
+            lineWrapping: false,
+            keyMap: 'sublime',
+            indentUnit: 4,
+            tabSize: 4,
+            mode: 'markdown',
+            showCursorWhenSelecting: true,
+            dragDrop: this.props.allowDropFile,
+        })
+
+        if (this.props.defaultValue) {
+            this.editor.setValue(this.props.defaultValue)
+        } else {
+            this.editor.setValue(this.props.value)
+        }
+
+        this.props.onRef(this.editor)
     }
 
     componentWillReceiveProps(nextProps: InputAreaProps) {
-        const thisCompleter = this.props.completers ? this.props.completers : [];
-        const nextCompleter = nextProps.completers ? nextProps.completers : [];
-        const isChange = thisCompleter.toString() !== nextCompleter.toString();
-        this.disabled = nextProps.disabled;
-        if (isChange) {
-            this.completers = nextProps.completers!;
-            this.addCustomCompletions();
+        if (this.props.value !== nextProps.value) {
+            this.editor.setValue(nextProps.value)
         }
     }
 
     render() {
         return (
-            <AceEditor
-                mode={'markdown'}
-                theme={'github'}
-                name={`markdown-code`}
-                value={this.props.value}
-                onChange={this.onChange}
-                showGutter={false}
-                showPrintMargin={false}
-                editorProps={{ $blockScrolling: false }}
-                enableBasicAutocompletion={true}
-                enableLiveAutocompletion={true}
-                ref={editor => {
-                    this.aceEditor = editor;
-                }}
-                readOnly={this.disabled}
-                onScroll={this.props.onScroll}
-                highlightActiveLine={this.props.highlightActiveLine}
-                defaultValue={this.props.defaultValue}
-                height={this.props.height ? this.props.height : '100%'}
-                width={'100%'} />
+            <textarea ref={p => { this.codeDom = p }}/>
         )
     }
 }

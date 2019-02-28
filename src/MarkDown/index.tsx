@@ -18,23 +18,22 @@ export interface IMarkDownChange {
 interface IMarkDownProps {
     mode: MarkDownMode,                  // 指定模式
     defaultValue?: string,               // 设定默认值
-    disabled?: boolean,                  // 编辑模式下是否禁止编辑
+    readonly?: boolean,                  // 编辑模式下是否禁止编辑
     value?: string,                      // 阅读模式下设定需要转化的markdown语句
     onChange?: (IMarkDownChange) => void,// 编辑模式下获取文本
-    height?: string,
     options?: {
-        highlightActiveLine: boolean,    // 高亮光标所在的行
-        highlightCode: boolean,          // code 组件是否高亮代码
-        showCodeLines: boolean,          // code 组件是否显示行数
-        scroll?: boolean,                // 编辑模式下两边代码是否同步
-        split?: React.Component | null,  // 自定义编辑模式下的split模块
+        allowDropFile?: boolean,          // 是否允许拖拽文件
+        highlightCode?: boolean,          // code 组件是否高亮代码
+        showCodeLines?: boolean,          // code 组件是否显示行数
+        scroll?: boolean,                 // 编辑模式下两边代码是否scroll同步
+        split?: React.Component | null,   // 自定义编辑模式下的split模块
     }
 }
 
 interface IMarkDownStates {
     html: string;
     mode: MarkDownMode;
-    disabled: boolean;
+    readonly: boolean;
     value: string;
 }
 
@@ -42,12 +41,12 @@ export class MarkDown extends React.Component<IMarkDownProps, IMarkDownStates> {
     active: string = '';
     defaultValue: string = '';
     highlightCode: boolean;
-    highlightActiveLine: boolean;
+    allowDropFile: boolean;
     scroll: boolean;
     showCodeLines: boolean;
     markdown: any;
+    editor: any;
     split: React.ReactNode | null;
-    disabled: boolean;
 
     constructor(props: IMarkDownProps) {
         super(props);
@@ -55,7 +54,7 @@ export class MarkDown extends React.Component<IMarkDownProps, IMarkDownStates> {
         this.state =  {
             html: '',
             mode: this.props.mode,
-            disabled: !!this.props.disabled,
+            readonly: !!this.props.readonly,
             value: this.props.value ? this.props.value : ''
         }
 
@@ -65,7 +64,7 @@ export class MarkDown extends React.Component<IMarkDownProps, IMarkDownStates> {
         this.scroll = options && options.scroll !== undefined ? options.scroll : true;
         this.showCodeLines = options && options.showCodeLines !== undefined ? options.showCodeLines : true;
         this.highlightCode = options && options.highlightCode !== undefined ? options.highlightCode : true;
-        this.highlightActiveLine = options && options.highlightActiveLine !== undefined ? options.highlightActiveLine : true;
+        this.allowDropFile = options && options.allowDropFile !== undefined ? options.allowDropFile : true;
 
         if (options && options.split !== null) {
             this.split = options.split
@@ -80,16 +79,12 @@ export class MarkDown extends React.Component<IMarkDownProps, IMarkDownStates> {
         return $('#htmlContent').scrollTop()!;
     }
 
-    get markdownScrollTop() {
-        return $('#markdown-code .ace_scrollbar-v')[0].scrollTop;
-    }
-
     get htmlScrollHeight() {
         return $('#htmlContent')[0].scrollHeight - $('#htmlContent')[0].clientHeight;
     }
 
     get markdownScrollHeight() {
-        return $('#markdown-code .ace_scrollbar-v')[0].scrollHeight - $('#markdown-code .ace_scrollbar-v')[0].clientHeight;
+        return this.editor.doc.height - $("#markdownContent")[0].clientHeight;
     }
 
     showCodeNumber() {
@@ -116,9 +111,9 @@ export class MarkDown extends React.Component<IMarkDownProps, IMarkDownStates> {
         })
     }
 
-    mkScroll = (e: any) => {
+    mkScroll = (e) => {
         if (this.active === 'markdown') {
-            const ratio = this.markdownScrollTop / this.markdownScrollHeight;
+            const ratio = e.doc.scrollTop / this.markdownScrollHeight;
             const htmlScrollTop = this.htmlScrollHeight * ratio;
             $('#htmlContent').scrollTop(htmlScrollTop);
         }
@@ -128,7 +123,7 @@ export class MarkDown extends React.Component<IMarkDownProps, IMarkDownStates> {
         if (this.active === 'html') {
             const ratio = this.htmlScrollTop / this.htmlScrollHeight;
             const markdownScrollTop = this.markdownScrollHeight * ratio;
-            $('#markdown-code .ace_scrollbar-v').scrollTop(markdownScrollTop);
+            this.editor.scrollTo(0, markdownScrollTop);
         }
     }
 
@@ -137,7 +132,7 @@ export class MarkDown extends React.Component<IMarkDownProps, IMarkDownStates> {
             this.active = 'html';
         })
 
-        $('#markdown-code').on('mouseenter', () => {
+        $('#markdownContent').on('mouseenter', () => {
             this.active = 'markdown';
         })
     }
@@ -175,15 +170,11 @@ export class MarkDown extends React.Component<IMarkDownProps, IMarkDownStates> {
     }
 
     onChange = (val: string) => {
-        const newState = {...this.state}
-        newState.value = val;
+        this.md2Html(val);
+    }
 
-        this.setState(newState, () => {
-            this.md2Html(val);
-        })
-
-
-
+    onRef = (editor: any) => {
+        this.editor = editor;
     }
 
     componentDidMount() {
@@ -196,6 +187,20 @@ export class MarkDown extends React.Component<IMarkDownProps, IMarkDownStates> {
         if (this.state.mode === MarkDownMode.EDIT && this.scroll) {
             this.setActive();
         }
+
+        this.editor.on('scroll', (e) => {
+            this.mkScroll(e);
+        })
+
+        this.editor.on('change', () => {
+            this.onChange!(this.editor.getValue())
+        })
+
+        this.editor.on('beforeChange', (i: any, c: any) => {
+            if (this.state.readonly) {
+                c.cancel()
+            }
+        })
     }
 
     componentWillReceiveProps(nextProps: IMarkDownProps) {
@@ -205,9 +210,9 @@ export class MarkDown extends React.Component<IMarkDownProps, IMarkDownStates> {
             this.setState(newState)
         }
 
-        if (this.props.disabled !== nextProps.disabled) {
+        if (this.props.readonly !== nextProps.readonly) {
             const newState = {...this.state};
-            newState.disabled = !!nextProps.disabled
+            newState.readonly = !!nextProps.readonly
             this.setState(newState)
         }
 
@@ -220,18 +225,14 @@ export class MarkDown extends React.Component<IMarkDownProps, IMarkDownStates> {
         return (
             <div className="markdown-wrapper">
                 <div className="markdown-row">
-                    {
-                        this.state.mode === MarkDownMode.VIEW
-                            ? null
-                            : <div className="markdown-part">
-                                <div id="markdownContent" >
-                                    <InputArea
-                                        highlightActiveLine={this.highlightActiveLine} onChange={this.onChange}
-                                        disabled={this.state.disabled} defaultValue={this.defaultValue}
-                                        value={this.state.value} onScroll={this.mkScroll} height={this.props.height}/>
-                                    </div>
-                                </div>
-                    }
+                    <div className="markdown-part"
+                         style={{display: `${this.state.mode === MarkDownMode.VIEW ? 'none' : 'block'}`}}>
+                        <div id="markdownContent" >
+                            <InputArea
+                                allowDropFile={this.allowDropFile} defaultValue={this.defaultValue}
+                                value={this.state.value} onRef={this.onRef}/>
+                        </div>
+                    </div>
                     {this.state.mode === MarkDownMode.VIEW ? null : this.split}
                     <div className="html-part">
                         <div id="htmlContent" onScroll={this.htmlScroll} dangerouslySetInnerHTML={{__html: this.state.html}} />

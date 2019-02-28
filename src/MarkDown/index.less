@@ -12,13 +12,13 @@
     }
 
     .markdown-part, .html-part {
-      flex: 1;
-      width: 50%;
+      flex: auto;
+      width: 0;
     }
   }
 
   .split {
-    width: 25px;
+    width: 50px;
     height: 100%;
     background: url("./images/split.png");
   }
@@ -33,18 +33,14 @@
   }
 
   #markdownContent {
-    .ace-textmate {
-      .ace_marker-layer .ace_active-line, .ace_gutter-active-line {
-        background: #EFF3F7;
-      }
-      .ace_gutter {
-        background: #F8FBFF;
-      }
-      .ace-content {
-        background: #DCE3EE;
-      }
-      .ace_print-margin {
-        visibility: hidden!important;
+    font-size: 13px;
+
+    .CodeMirror {
+      height: 100%;
+      color: #333 !important;
+
+      pre.CodeMirror-line {
+        line-height: 1.8em;
       }
     }
   }
@@ -63,7 +59,7 @@
   }
 
   p {
-    line-height: 1.6rem;
+    line-height: 1.8em;
   }
 
   pre {
@@ -139,5 +135,13 @@
       text-align: center;
     }
   }
+}
+
+.cm-header {
+  color: #2C3E50 !important;
+}
+
+.cm-quote, .cm-link {
+  color: #4271AE !important;
 }
 

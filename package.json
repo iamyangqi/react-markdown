@@ -1,6 +1,6 @@
 {
   "name": "react-markdown-ts",
-  "version": "0.0.8",
+  "version": "1.0.0",
   "description": "markdown written by react + typescript",
   "module": "./lib/MarkDown/index.js",
   "main": "./lib/MarkDown/index.js",
@@ -28,10 +28,12 @@
   "homepage": "https://github.com/iamyangqi/react-markdown#readme",
   "dependencies": {
     "@types/antd": "^1.0.0",
+    "@types/codemirror": "^0.0.72",
     "@types/highlight.js": "^9.12.3",
     "@types/jquery": "^3.3.29",
     "@types/marked": "^0.6.1",
     "antd": "^3.13.3",
+    "codemirror": "^5.44.0",
     "global": "^4.3.2",
     "highlight.js": "^9.14.2",
     "jquery": "^3.3.1",
@@ -71,6 +73,7 @@
   "scripts": {
     "clean": "rimraf -rf lib dist ",
     "dev": "webpack-dev-server --open --progress --colors --config webpack.dev.js",
+    "dist": "rimraf -rf lib dist && webpack --open --progress --colors --config webpack.prod.js",
     "build": "rimraf -rf lib dist && npm run gend && npm run compile-all-files-for-release && npm run copy-resource-files",
     "build-local": "rimraf -rf lib dist && npm run gend && npm run compile-all-files && npm run copy-resource-files",
     "compile-all-files": "npx tsc > /dev/null 2>&1",
