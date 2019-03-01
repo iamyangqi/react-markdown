@@ -21,7 +21,7 @@ export default class AppTest extends React.Component {
 
     render() {
         return (
-           <MarkDown mode={this.state.mode} onChange={this.onChange}/>
+           <MarkDown mode={MarkDownMode.VIEW} onChange={this.onChange}/>
         )
     }
 }
@@ -63,4 +63,4 @@ interface IMarkDownProps {
 
 您可以将本地的markdown文件直接拖拽至编辑框内，**react-markdown-ts** 会自动帮您解析加载，十分方便。
 
-##再一次感谢您花费时间阅读这份欢迎稿，开始撰写新的文稿吧！祝您在这里记录、阅读、分享愉快！
+## 再一次感谢您花费时间阅读这份欢迎稿，开始撰写新的文稿吧！祝您在这里记录、阅读、分享愉快！
